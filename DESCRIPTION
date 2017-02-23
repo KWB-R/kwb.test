@@ -8,6 +8,7 @@ Description: Functions to test whether different functions return the same
     results. I use these functions to test whether a function still returns the
     same result after cleaning code.
 Imports: kwb.utils
+Remotes: github::kwb-r/kwb.utils
 Suggests: compare
 License: GPL-2
 LazyData: TRUE
