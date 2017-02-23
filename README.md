@@ -4,16 +4,17 @@ Test whether Different Functions Return the Same
 # Install from GitHub 
 
 ```r
-if (! require("devtools")) {
+if (! requireNamespace("devtools")) {
   install.packages("devtools")
 }
-devtools::install_github("kwb-r/kwb.test)
+
+devtools::install_github("kwb-r/kwb.test")
 ```
 
 # Usage
 
 ```r
-library(kwb.qmra)
+library(kwb.test)
 
 # Define a function using saveArgs() to save arguments and result
 squareSum <- function(a, b) {
