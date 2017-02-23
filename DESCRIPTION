@@ -1,0 +1,14 @@
+Package: kwb.test
+Type: Package
+Title: Test whether Different Functions Return the Same
+Version: 0.0.99
+Author: Hauke Sonnenberg
+Maintainer: Hauke Sonnenberg <hauke.sonnenberg@kompetenz-wasser.de>
+Description: Functions to test whether different functions return the same
+    results. I use these functions to test whether a function still returns the
+    same result after cleaning code.
+Imports: kwb.utils
+Suggests: compare
+License: GPL-2
+LazyData: TRUE
+RoxygenNote: 5.0.1
