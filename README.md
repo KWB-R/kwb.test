@@ -15,10 +15,14 @@ devtools::install_github("kwb-r/kwb.test")
 
 # Usage
 
+Load the package
 ```r
 library(kwb.test)
+```
 
-# Define a function using saveArgs() to save arguments and result
+Define a function using saveArgs() to save arguments and result
+
+```r
 squareSum <- function(a, b) {
   result <- a * a + b * b
   saveArgs("squareSum", args = list(a = a, b = b), result = result)
