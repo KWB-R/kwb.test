@@ -1,6 +1,8 @@
 # kwb.test
 Test whether Different Functions Return the Same
 
+[![Build Status](https://travis-ci.org/KWB-R/kwb.test.svg?branch=master)](https://travis-ci.org/KWB-R/kwb.test)
+
 # Install from GitHub 
 
 ```r
