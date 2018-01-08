@@ -33,4 +33,3 @@ results from the stored arguments. Check out the example on the help page for
 \seealso{
 \code{\link{loadArgs}}
 }
-

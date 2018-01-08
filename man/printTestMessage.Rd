@@ -25,4 +25,3 @@ character string
 printTestMessage("apple == apple", 1 == 1)
 printTestMessage("apple == pear", 1 == 2)
 }
-

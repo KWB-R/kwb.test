@@ -24,4 +24,3 @@ testColumnwiseIdentity(data.1 = (x <- data.frame(a = 1:2, b = 2:3)),
 testColumnwiseIdentity(A = data.frame(x = 1:2, y = 2:3),
                        B = data.frame(x = 1:2, y = 3:4))
 }
-

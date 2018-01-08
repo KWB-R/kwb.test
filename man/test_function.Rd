@@ -61,4 +61,3 @@ test_function("squareSum.new", loadArgs("squareSum"))
 # return TRUE if the function did not change in the meanwhile.
 test_function("squareSum")
 }
-
