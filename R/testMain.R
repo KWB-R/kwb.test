@@ -181,8 +181,8 @@ loadArgs <- function
   result <- lapply(data.files, function(data.file) {
 
     list(
-      args = kwb.utils::getObjectFromRDataFile(data.file, "args"),
-      result = kwb.utils::getObjectFromRDataFile(data.file, "result")
+      args = kwb.utils::loadObject(data.file, "args"),
+      result = kwb.utils::loadObject(data.file, "result")
     )
   })
 
@@ -280,7 +280,7 @@ saveArgs <- function
 (
   functionName,
   ...,
-  targetdir = kwb.utils::createDirAndReturnPath(file.path(tempdir(), "test"))
+  targetdir = kwb.utils::createDirectory(file.path(tempdir(), "test"))
 )
 {
   if (! exists("TESTMODE")) {

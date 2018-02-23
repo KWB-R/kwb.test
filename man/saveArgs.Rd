@@ -5,7 +5,7 @@
 \title{Save the Arguments and Result of a Function Call}
 \usage{
 saveArgs(functionName, ...,
-  targetdir = kwb.utils::createDirAndReturnPath(file.path(tempdir(), "test")))
+  targetdir = kwb.utils::createDirectory(file.path(tempdir(), "test")))
 }
 \arguments{
 \item{functionName}{name of the function to which the arguments to be saved
