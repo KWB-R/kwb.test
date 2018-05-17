@@ -1,9 +1,9 @@
 Package: kwb.test
 Type: Package
 Title: Test whether Different Functions Return the Same
-Version: 0.1.0
-Author: Hauke Sonnenberg
-Maintainer: Hauke Sonnenberg <hauke.sonnenberg@kompetenz-wasser.de>
+Version: 0.1.0.9000
+Authors@R: c(person("Hauke", "Sonnenberg", , "hauke.sonnenberg@kompetenz-wasser.de", role = c("aut", "cre")),
+             person("Kompetenzzentrum Wasser Berlin gGmbH", role = c("cph")))
 Description: Functions to test whether different functions return the same
     results. I use these functions to test whether a function still returns the
     same result after cleaning code.
@@ -13,3 +13,5 @@ Suggests: compare
 License: GPL-2
 LazyData: TRUE
 RoxygenNote: 6.0.1
+URL: https://github.com/kwb-r/kwb.test
+BugReports: https://github.com/kwb-r/kwb.test/issues
