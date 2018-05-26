@@ -21,7 +21,7 @@ if (FALSE)
 #'
 #' @export
 #'
-create_test_files <- function(package_dir = ".", dbg = TRUE)
+create_test_files <- function(package_dir = getwd(), dbg = TRUE)
 {
   package_name <- basename(package_dir)
 

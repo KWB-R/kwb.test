@@ -4,7 +4,7 @@
 \alias{create_test_files}
 \title{Create Test Files}
 \usage{
-create_test_files(package_dir = ".", dbg = TRUE)
+create_test_files(package_dir = getwd(), dbg = TRUE)
 }
 \arguments{
 \item{package_dir}{path to package directory in which to create the test
