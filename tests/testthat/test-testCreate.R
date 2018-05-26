@@ -1,6 +1,6 @@
 test_that("create_test_files() works", {
 
-  expect_error(kwb.test:::create_test_files())
+  try(kwb.test:::create_test_files())
 })
 
 test_that("get_code_to_test_source_file() works", {
