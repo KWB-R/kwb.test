@@ -181,8 +181,8 @@ loadArgs <- function
   result <- lapply(data.files, function(data.file) {
 
     list(
-      args = kwb.utils::getObjectFromRDataFile(data.file, "args"),
-      result = kwb.utils::getObjectFromRDataFile(data.file, "result")
+      args = kwb.utils::loadObject(data.file, "args"),
+      result = kwb.utils::loadObject(data.file, "result")
     )
   })
 

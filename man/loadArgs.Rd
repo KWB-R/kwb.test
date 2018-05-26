@@ -58,4 +58,3 @@ identical(results, lapply(testdata, "[[", "result"))
 \seealso{
 \code{\link{saveArgs}}
 }
-
