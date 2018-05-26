@@ -280,7 +280,7 @@ saveArgs <- function
 (
   functionName,
   ...,
-  targetdir = kwb.utils::createDirAndReturnPath(file.path(tempdir(), "test"))
+  targetdir = kwb.utils::createDirectory(file.path(tempdir(), "test"))
 )
 {
   if (! exists("TESTMODE")) {
