@@ -4,11 +4,16 @@
 \alias{create_test_files}
 \title{Create Test Files}
 \usage{
-create_test_files(package_dir = getwd(), dbg = TRUE)
+create_test_files(package_dir = getwd(), file_per_function = TRUE,
+  dbg = TRUE)
 }
 \arguments{
 \item{package_dir}{path to package directory in which to create the test
 files}
+
+\item{file_per_function}{if \code{TRUE} (default), one test file
+\code{test-<function>.R} is generated for each function, otherwise one test
+file \code{test-<source-file>} is generated for each source file.}
 
 \item{dbg}{if \code{TRUE}, debug messages are shown}
 }
