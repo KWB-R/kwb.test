@@ -9,7 +9,10 @@ Description: Functions to test whether different functions return the same
     same result after cleaning code.
 Imports: kwb.utils
 Remotes: github::kwb-r/kwb.utils
-Suggests: compare
+Suggests: 
+    compare,
+    usethis,
+    testthat
 License: MIT + file LICENSE
 LazyData: TRUE
 RoxygenNote: 6.0.1
