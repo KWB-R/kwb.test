@@ -66,9 +66,9 @@ create_test_files <- function(
         # One file per function
         for (code in codes) {
 
-          function_name <- kwb.utils::getAttribute(code, "function_name")
+          fun_name <- kwb.utils::getAttribute(code, "fun_name")
 
-          filename <- sprintf("test-function-%s.R", function_name)
+          filename <- sprintf("test-function-%s.R", fun_name)
 
           test_file <- file.path(test_dir, filename)
 
@@ -134,24 +134,40 @@ get_function_assignments <- function(file)
 }
 
 # get_test_for_function_assignment ---------------------------------------------
-get_test_for_function_assignment <- function(assignment, package_name, exports)
+get_test_for_function_assignment <- function(
+  assignment, pkg_name, exports = getNamespaceExports(pkg_name), full = FALSE
+)
 {
-  function_name <- as.character(assignment[[2]])
+  #assignment <- assignments[[1]]
 
-  exported <- function_name %in% exports
+  fun_name <- as.character(assignment[[2]])
 
-  error <- ! runs_without_arguments(package_name, function_name)
+  exported <- fun_name %in% exports
+
+  arg_combis <- if (full) {
+
+    get_arg_combis(arg_names = get_no_default_args(assignment))
+
+  } else {
+
+    data.frame()
+  }
+
+  call_strings <- get_function_call_strings(fun_name, arg_combis, pkg_name)
+
+  fails <- try_to_call(call_strings)
+
+  call_strings[fails] <- sprintf("expect_error(%s)", call_strings[fails])
+
+  test_that_body <- paste0("  ", call_strings, collapse = "\n")
 
   templates <- kwb.utils::resolve(
-    get_templates(),
-    fun = function_name,
-    pkg = package_name,
-    args = "",
+    get_templates(), fun = fun_name, pkg = pkg_name, args = "",
     pkg_fun = ifelse(exported, "<pkg_fun_exported>", "<pkg_fun_private>"),
-    test_that_body = ifelse(error, "<fun_call_error>", "<fun_call_alone>")
+    test_that_body = paste0(test_that_body, "\n")
   )
 
-  structure(templates$test_that_call, function_name = function_name)
+  structure(templates$test_that_call, fun_name = fun_name)
 }
 
 # get_templates ----------------------------------------------------------------
@@ -171,10 +187,77 @@ get_templates <- function()
   )
 }
 
-# runs_without_arguments -------------------------------------------------------
-runs_without_arguments <- function(package_name, function_name)
+# try_to_call ------------------------------------------------------------------
+try_to_call <- function(call_strings)
 {
-  expr <- parse(text = sprintf("%s:::%s()", package_name, function_name))
+  sapply(call_strings, function(call_string) {
 
-  ! inherits(tryCatch(eval(expr), error = function(e) e), "simpleError")
+    expr <- parse(text = call_string)
+
+    inherits(tryCatch(eval(expr), error = function(e) e), "simpleError")
+  })
+}
+
+# get_function_call_strings ----------------------------------------------------
+get_function_call_strings <- function(fun_name, arg_combis, pkg_name = "")
+{
+  templates <- get_templates()
+
+  templates <- kwb.utils::resolve(templates, fun = fun_name, pkg = pkg_name)
+
+  key <- ifelse(pkg_name == "", "pkg_fun_exported", "pkg_fun_private")
+
+  arg_strings <- ""
+
+  if (nrow(arg_combis) > 0) {
+
+    arg_combi_list <- kwb.utils::asColumnList(as.matrix(arg_combis))
+
+    assignment <- function(name) paste(name, "=", arg_combi_list[[name]])
+
+    paste_args <- c(lapply(names(arg_combi_list), assignment), sep = ", ")
+
+    arg_strings <- do.call(paste, paste_args)
+  }
+
+  sprintf("%s(%s)", templates[[key]], arg_strings)
+}
+
+# get_arg_combis ---------------------------------------------------------------
+get_arg_combis <- function(arg_names)
+{
+  string_values <- c(
+    "NULL",
+    "numeric()", "1", "1:2",
+    "character()", "'a'", "c('a', 'b')",
+    "logical()", "TRUE", "FALSE"
+  )
+
+  n <- length(arg_names)
+
+  if (n == 1) {
+
+    matrix(string_values, ncol = 1, dimnames = list(NULL, arg_names))
+
+  } else {
+
+    f <- rep(seq_len(n), each = length(string_values))
+
+    arguments <- split(rep(string_values, n), f = f)
+
+    names(arguments) <- arg_names
+
+    do.call(kwb.utils::expandGrid, arguments)
+  }
+}
+
+# get_no_default_args ----------------------------------------------------------
+get_no_default_args <- function(function_assignment)
+{
+  arguments <- function_assignment[[3]][[2]]
+
+  if (! is.null(arguments)) {
+
+    names(which(sapply(arguments, is.symbol)))
+  }
 }
