@@ -1,4 +1,4 @@
-[![Appveyor build status](https://ci.appveyor.com/api/projects/status/88r5ooo4lv40tl45/branch/master?svg=true)](https://ci.appveyor.com/project/KWB-R/kwb-test/branch/master)[![Build Status](https://travis-ci.org/KWB-R/kwb.test.svg?branch=master)](https://travis-ci.org/KWB-R/kwb.test)
+[![Appveyor build status](https://ci.appveyor.com/api/projects/status/88r5ooo4lv40tl45/branch/master?svg=true)](https://ci.appveyor.com/project/KWB-R/kwb-test/branch/master)
 [![Build Status](https://travis-ci.org/KWB-R/kwb.test.svg?branch=master)](https://travis-ci.org/KWB-R/kwb.test)
 [![codecov](https://codecov.io/github/KWB-R/kwb.test/branch/master/graphs/badge.svg)](https://codecov.io/github/KWB-R/kwb.test)
 [![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
