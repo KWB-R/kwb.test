@@ -12,16 +12,17 @@
 #' @param file_per_function if \code{TRUE} (default), one test file
 #'   \code{test-<function>.R} is generated for each function, otherwise one test
 #'   file \code{test-<source-file>} is generated for each source file.
-#'
+#' @param full if \code{TRUE}, test calls with many argument combinations are
+#'   generated instead of only one call
 #' @param dbg if \code{TRUE}, debug messages are shown
 #'
 #' @export
 #'
 create_test_files <- function(
-  package_dir = getwd(), file_per_function = TRUE, dbg = TRUE
+  package_dir = getwd(), file_per_function = TRUE, full = FALSE, dbg = TRUE
 )
 {
-  package_name <- basename(package_dir)
+  pkg_name <- basename(package_dir)
 
   old_dir <- setwd(package_dir)
 
@@ -53,7 +54,9 @@ create_test_files <- function(
 
     if (! skip) {
 
-      codes <- get_test_codes_for_functions_in_file(source_file, package_name)
+      codes <- get_test_codes_for_functions_in_file(
+        source_file, pkg_name, full = full
+      )
 
       intro <- kwb.utils::resolve("intro", get_templates())
 
@@ -106,13 +109,14 @@ write_test_file <- function(code, test_file, dbg = TRUE)
 }
 
 # get_test_codes_for_functions_in_file -----------------------------------------
-get_test_codes_for_functions_in_file <- function(file, package_name)
+get_test_codes_for_functions_in_file <- function(file, pkg_name, ...)
 {
   lapply(
     get_function_assignments(file),
     FUN = get_test_for_function_assignment,
-    package_name = package_name,
-    exports = getNamespaceExports(package_name)
+    pkg_name = pkg_name,
+    exports = getNamespaceExports(pkg_name),
+    ...
   )
 }
 
