@@ -22,6 +22,10 @@ create_test_files <- function(
   package_dir = getwd(), file_per_function = TRUE, full = FALSE, dbg = TRUE
 )
 {
+  if (FALSE) {
+    package_dir = getwd(); file_per_function = TRUE; full = FALSE; dbg = TRUE
+  }
+
   pkg_name <- basename(package_dir)
 
   old_dir <- setwd(package_dir)
