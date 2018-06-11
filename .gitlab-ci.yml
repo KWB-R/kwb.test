@@ -6,3 +6,4 @@ artifacts:
   - public
 only:
   - master
+
