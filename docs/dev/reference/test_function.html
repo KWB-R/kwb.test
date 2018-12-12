@@ -21,9 +21,11 @@
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script>
 
+<!-- sticky kit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
 
 
@@ -36,7 +38,6 @@ for identity." />
 <meta name="twitter:card" content="summary" />
 
 <meta name="robots" content="noindex">
-
 
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
@@ -155,39 +156,29 @@ either defined in the global environment or on the search path.</p></td>
 <span class='no'>TESTMODE</span> <span class='kw'>&lt;-</span> <span class='fl'>TRUE</span>
 
 <span class='co'># Call the function with different arguments</span>
-<span class='fu'>squareSum</span>(<span class='fl'>1</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; The directory "C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test" already exists.
-#&gt; saving args to C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test/args_squareSum_105129_0.RData ... ok.</div><div class='output co'>#&gt; [1] 5</div><div class='input'><span class='fu'>squareSum</span>(<span class='fl'>2</span>, <span class='fl'>3</span>)</div><div class='output co'>#&gt; The directory "C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test" already exists.
-#&gt; saving args to C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test/args_squareSum_105130_0.RData ... ok.</div><div class='output co'>#&gt; [1] 13</div><div class='input'><span class='fu'>squareSum</span>(-<span class='fl'>1</span>, -<span class='fl'>2</span>)</div><div class='output co'>#&gt; The directory "C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test" already exists.
-#&gt; saving args to C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test/args_squareSum_105130_1.RData ... ok.</div><div class='output co'>#&gt; [1] 5</div><div class='input'>
+<span class='fu'>squareSum</span>(<span class='fl'>1</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; [Set global variable TESTMODE to FALSE to prevent this message]
+#&gt; Save args to 'squareSum' (y, n)? </div><div class='output co'>#&gt; [1] 5</div><div class='input'><span class='fu'>squareSum</span>(<span class='fl'>2</span>, <span class='fl'>3</span>)</div><div class='output co'>#&gt; [Set global variable TESTMODE to FALSE to prevent this message]
+#&gt; Save args to 'squareSum' (y, n)? </div><div class='output co'>#&gt; [1] 13</div><div class='input'><span class='fu'>squareSum</span>(-<span class='fl'>1</span>, -<span class='fl'>2</span>)</div><div class='output co'>#&gt; [Set global variable TESTMODE to FALSE to prevent this message]
+#&gt; Save args to 'squareSum' (y, n)? </div><div class='output co'>#&gt; [1] 5</div><div class='input'>
 <span class='co'># The arguments and function results were saved here:</span>
-<span class='fu'>dir</span>(<span class='fu'>file.path</span>(<span class='fu'>tempdir</span>(), <span class='st'>"test"</span>))</div><div class='output co'>#&gt; [1] "args_double_105116_0.RData"    "args_double_105117_0.RData"   
-#&gt; [3] "args_double_105118_0.RData"    "args_double_105119_0.RData"   
-#&gt; [5] "args_double_105120_0.RData"    "args_double_105121_0.RData"   
-#&gt; [7] "args_squareSum_105129_0.RData" "args_squareSum_105130_0.RData"
-#&gt; [9] "args_squareSum_105130_1.RData"</div><div class='input'>
+<span class='fu'>dir</span>(<span class='fu'>file.path</span>(<span class='fu'>tempdir</span>(), <span class='st'>"test"</span>))</div><div class='output co'>#&gt; character(0)</div><div class='input'>
 <span class='co'># Write a new (wrong) version of the function</span>
 <span class='no'>squareSum.new</span> <span class='kw'>&lt;-</span> <span class='kw'>function</span>(<span class='no'>a</span>, <span class='no'>b</span>) {
   <span class='no'>a</span> * <span class='no'>a</span> - <span class='no'>b</span> * <span class='no'>b</span>
 }
 
 <span class='co'># Check if it returns the same results</span>
-<span class='fu'>test_function</span>(<span class='st'>"squareSum.new"</span>, <span class='fu'><a href='loadArgs.html'>loadArgs</a></span>(<span class='st'>"squareSum"</span>))</div><div class='output co'>#&gt; Loading 'args' from 'C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test/args_squareSum_105129_0.RData'... ok.
-#&gt; Loading 'result' from 'C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test/args_squareSum_105129_0.RData'... ok.
-#&gt; Loading 'args' from 'C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test/args_squareSum_105130_0.RData'... ok.
-#&gt; Loading 'result' from 'C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test/args_squareSum_105130_0.RData'... ok.
-#&gt; Loading 'args' from 'C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test/args_squareSum_105130_1.RData'... ok.
-#&gt; Loading 'result' from 'C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test/args_squareSum_105130_1.RData'... ok.
-#&gt; Calling 'squareSum.new' with arguments stored in...</div><div class='output co'>#&gt; <span class='error'>Error in squareSum.new(a = 1, b = 2): could not find function "squareSum.new"</span></div><div class='output co'>#&gt;    squareSum_105129_0 -&gt; </div><div class='input'>
+<span class='fu'>test_function</span>(<span class='st'>"squareSum.new"</span>, <span class='fu'><a href='loadArgs.html'>loadArgs</a></span>(<span class='st'>"squareSum"</span>))</div><div class='output co'>#&gt; <span class='error'>Error: No such file: 'test' in</span>
+#&gt; <span class='error'>  '/tmp/RtmpmHUyR1'.</span>
+#&gt; <span class='error'>Available files:</span>
+#&gt; <span class='error'>  ''</span></div><div class='input'>
 <span class='co'># If no test data are given, loadArgs is called on the function to test,</span>
 <span class='co'># i.e. testing squareSum on the test data created by the same function will</span>
 <span class='co'># return TRUE if the function did not change in the meanwhile.</span>
-<span class='fu'>test_function</span>(<span class='st'>"squareSum"</span>)</div><div class='output co'>#&gt; Loading 'args' from 'C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test/args_squareSum_105129_0.RData'... ok.
-#&gt; Loading 'result' from 'C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test/args_squareSum_105129_0.RData'... ok.
-#&gt; Loading 'args' from 'C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test/args_squareSum_105130_0.RData'... ok.
-#&gt; Loading 'result' from 'C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test/args_squareSum_105130_0.RData'... ok.
-#&gt; Loading 'args' from 'C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test/args_squareSum_105130_1.RData'... ok.
-#&gt; Loading 'result' from 'C:\Users\mrustl.KWB\AppData\Local\Temp\RtmpEXV8rA/test/args_squareSum_105130_1.RData'... ok.
-#&gt; Calling 'squareSum' with arguments stored in...</div><div class='output co'>#&gt; <span class='error'>Error in squareSum(a = 1, b = 2): could not find function "squareSum"</span></div><div class='output co'>#&gt;    squareSum_105129_0 -&gt; </div></pre>
+<span class='fu'>test_function</span>(<span class='st'>"squareSum"</span>)</div><div class='output co'>#&gt; <span class='error'>Error: No such file: 'test' in</span>
+#&gt; <span class='error'>  '/tmp/RtmpmHUyR1'.</span>
+#&gt; <span class='error'>Available files:</span>
+#&gt; <span class='error'>  ''</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
