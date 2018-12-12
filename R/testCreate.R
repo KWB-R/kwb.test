@@ -9,6 +9,8 @@
 #'
 #' @param package_dir path to package directory in which to create the test
 #'   files
+#' @param target_dir directory in which to create the test files. Defaults to
+#'   \code{<package_dir>/tests/testthat}.
 #' @param file_per_function if \code{TRUE} (default), one test file
 #'   \code{test-<function>.R} is generated for each function, otherwise one test
 #'   file \code{test-<source-file>} is generated for each source file.
@@ -21,7 +23,8 @@
 #' @importFrom kwb.utils createDirectory
 #'
 create_test_files <- function(
-  package_dir = getwd(), file_per_function = TRUE, full = FALSE, dbg = TRUE
+  package_dir = getwd(), target_dir = NULL, file_per_function = TRUE,
+  full = FALSE, dbg = TRUE
 )
 {
   if (FALSE) {
@@ -38,16 +41,18 @@ create_test_files <- function(
 
   source_files <- file.path("R", dir("R"))
 
-  test_dir <- file.path("tests", "testthat")
+  if (is.null(target_dir)) {
 
-  test_dir <- kwb.utils::createDirectory(test_dir, dbg = dbg)
+    target_dir <- file.path("tests", "testthat")
+    target_dir <- kwb.utils::createDirectory(target_dir, dbg = dbg)
+  }
 
   #source_file <- source_files[1]
 
   for (source_file in source_files) {
 
     create_tests_for_file(
-      source_file, test_dir, pkg_name, file_per_function, full, dbg
+      source_file, target_dir, pkg_name, file_per_function, full, dbg
     )
   }
 }
