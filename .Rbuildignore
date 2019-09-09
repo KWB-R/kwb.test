@@ -7,3 +7,5 @@
 ^docs\.*
 _pkgdown.yaml
 .gitlab-ci.yml
+^.gitlab-ci\.yml$
+^\.travis\.yml$
