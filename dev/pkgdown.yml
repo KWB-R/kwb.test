@@ -1,0 +1,8 @@
+pandoc: '2.2'
+pkgdown: 1.4.0
+pkgdown_sha: ~
+articles: []
+urls:
+  reference: https://kwb-r.github.io/kwb.test/reference
+  article: https://kwb-r.github.io/kwb.test/articles
+
