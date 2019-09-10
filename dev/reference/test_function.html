@@ -174,18 +174,18 @@ either defined in the global environment or on the search path.</p></td>
 
 <span class='co'># Check if it returns the same results</span>
 <span class='fu'>test_function</span>(<span class='st'>"squareSum.new"</span>, <span class='fu'><a href='loadArgs.html'>loadArgs</a></span>(<span class='st'>"squareSum"</span>))</div><div class='output co'>#&gt; <span class='error'>Error: No such file: 'test' in</span>
-#&gt; <span class='error'>  '/tmp/RtmpasNWkk'.</span>
+#&gt; <span class='error'>  '/tmp/RtmpvbraJR'.</span>
 #&gt; <span class='error'>Available files:</span>
-#&gt; <span class='error'>  'file5f4d19e28d0d.so'</span>
+#&gt; <span class='error'>  'file3f1c31a61f44.so'</span>
 #&gt; <span class='error'>  'libloc_173_c7ca16f4b15c0cc.rds'</span>
 #&gt; <span class='error'>  'libloc_183_27f76f287b614bfa.rds'</span></div><div class='input'>
 <span class='co'># If no test data are given, loadArgs is called on the function to test,</span>
 <span class='co'># i.e. testing squareSum on the test data created by the same function will</span>
 <span class='co'># return TRUE if the function did not change in the meanwhile.</span>
 <span class='fu'>test_function</span>(<span class='st'>"squareSum"</span>)</div><div class='output co'>#&gt; <span class='error'>Error: No such file: 'test' in</span>
-#&gt; <span class='error'>  '/tmp/RtmpasNWkk'.</span>
+#&gt; <span class='error'>  '/tmp/RtmpvbraJR'.</span>
 #&gt; <span class='error'>Available files:</span>
-#&gt; <span class='error'>  'file5f4d19e28d0d.so'</span>
+#&gt; <span class='error'>  'file3f1c31a61f44.so'</span>
 #&gt; <span class='error'>  'libloc_173_c7ca16f4b15c0cc.rds'</span>
 #&gt; <span class='error'>  'libloc_183_27f76f287b614bfa.rds'</span></div></pre>
   </div>
