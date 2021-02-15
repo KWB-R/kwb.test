@@ -304,7 +304,7 @@ get_templates <- function()
     intro_4 = "# so that real cases are tested. <hint_delete>\n#\n",
     hint_delete = "You should then delete this comment.",
     test_creator = "kwb.test::create_test_files()",
-    test_that_call = "test_that(\"<fun>() works\", {\n\n<test_that_body>})\n",
+    test_that_call = "test_that(\"<fun>() works\", {\n\n<test_that_body>})",
     fun_call = "<pkg_fun>(<args>)",
     fun_call_alone = "  <fun_call>\n",
     fun_call_error = "<i1>expect_error(\n<expect_error_args>\n<i1>)\n",
