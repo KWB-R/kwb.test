@@ -41,18 +41,17 @@ create_test_files <- function(
 
   source_files <- file.path("R", dir("R"))
 
-  if (is.null(target_dir)) {
+  target_dir <- kwb.utils::defaultIfNULL(
+    target_dir,
+    kwb.utils::createDirectory(file.path("tests", "testthat"), dbg = dbg)
+  )
 
-    target_dir <- file.path("tests", "testthat")
-    target_dir <- kwb.utils::createDirectory(target_dir, dbg = dbg)
-  }
-
-  #source_file <- source_files[1]
+  #source_file <- source_files[3]
 
   for (source_file in source_files) {
 
     create_tests_for_file(
-      source_file, target_dir, pkg_name, file_per_function, full, dbg
+      source_file, test_dir = target_dir, pkg_name, file_per_function, full, dbg
     )
   }
 }
