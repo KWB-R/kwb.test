@@ -128,20 +128,22 @@ write_one_file_per_function <- function(codes, test_dir, intro, dbg = TRUE)
 
     fun_name <- kwb.utils::getAttribute(code, "fun_name")
 
-    filename <- sprintf("test-function-%s.R", fun_name)
-
-    test_file <- file.path(test_dir, filename)
+    test_file <- path_to_testfile(test_dir, fun_name)
 
     if (! warn_if_file_exists(test_file)) {
-
       write_test_file(c(intro, code), test_file, dbg = dbg)
     }
   }
 }
 
+# path_to_testfile -------------------------------------------------------------
+path_to_testfile <- function(test_dir, fun_name)
+{
+  sprintf("%s/test-function-%s.R", test_dir, fun_name)
+}
+
 # get_test_codes_for_functions_in_file -----------------------------------------
-#' @importFrom kwb.utils toNamedList
-get_test_codes_for_functions_in_file <- function(file, pkg_name, ...)
+get_test_codes_for_functions_in_file <- function(file, pkg_name, test_dir, ...)
 {
   # Get the expressions that represent assignments of function definitions
   assignments <- get_function_assignments(file)
@@ -153,7 +155,13 @@ get_test_codes_for_functions_in_file <- function(file, pkg_name, ...)
   exports <- getNamespaceExports(pkg_name)
 
   # Create a test_that-call for each function
-  lapply(kwb.utils::toNamedList(names(assignments)), function(fun_name) {
+  kwb.utils::excludeNULL(dbg = FALSE, lapply(
+    stats::setNames(nm = names(assignments)),
+    FUN = function(fun_name) {
+
+      if (warn_if_file_exists(path_to_testfile(test_dir, fun_name))) {
+        return()
+      }
 
       get_test_for_function(
         fun_name = fun_name,
@@ -162,7 +170,8 @@ get_test_codes_for_functions_in_file <- function(file, pkg_name, ...)
         exports = exports,
         ...
       )
-  })
+    }
+  ))
 }
 
 # get_function_assignments -----------------------------------------------------
