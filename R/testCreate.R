@@ -236,11 +236,23 @@ get_test_for_function_calls <- function(
 
   errors <- sapply(errors, get_error_message)
 
+  full_fun_name <- kwb.utils::resolve(
+    ifelse(exported, "pkg_fun_exported", "pkg_fun_private"),
+    templates_raw,
+    fun = fun_name,
+    pkg = pkg_name
+  )
+
+  pattern <- paste0("(^|\\s)", full_fun_name, "\\(")
+
+  use_shortcut <- function(x) gsub(pattern, "f(", x)
+
   expect_calls_fail <- sapply(seq_along(fail_indices), function(i) {
 
     kwb.utils::resolve(
-      "fun_call_error", templates_raw,
-      fun_call = call_strings[fail_indices[i]],
+      "fun_call_error",
+      templates_raw,
+      fun_call = use_shortcut(call_strings[fail_indices[i]]),
       quoted_error = gsub("\n", "\n# ", errors[i])
     )
   })
@@ -248,24 +260,44 @@ get_test_for_function_calls <- function(
   expect_calls_success <- sapply(success_indices, function(i) {
 
     kwb.utils::resolve(
-      "fun_call_alone", templates_raw, fun_call = call_strings[i]
+      "fun_call_alone",
+      templates_raw,
+      fun_call = use_shortcut(call_strings[i])
     )
   })
 
   #call_strings[fails] <- sprintf("expect_error(%s)", call_strings[fails])
   #test_that_body <- paste0("  ", call_strings, collapse = "\n")
 
-  test_that_body <- kwb.utils::collapsed(
-    c(expect_calls_success, expect_calls_fail)
+  shortcut <- get_shortcut_assignment(templates_raw, fun_name, pkg_name)
+
+  test_that_body <- paste0(
+    "  ", shortcut, "\n\n",
+    kwb.utils::collapsed(c(expect_calls_success, expect_calls_fail))
   )
 
   test_that_call <- kwb.utils::resolve(
-    "test_that_call", templates_raw, fun = fun_name, pkg = pkg_name,
-    pkg_fun = ifelse(exported, "<pkg_fun_exported>", "<pkg_fun_private>"),
+    "test_that_call",
+    templates_raw,
+    fun = fun_name,
+    #pkg = pkg_name,
+    #pkg_fun = "f", #ifelse(exported, "<pkg_fun_exported>", "<pkg_fun_private>"),
     test_that_body = paste0(test_that_body, "\n")
   )
 
   structure(test_that_call, fun_name = fun_name)
+}
+
+# get_shortcut_assignment ------------------------------------------------------
+get_shortcut_assignment <- function(templates, fun_name, pkg_name)
+{
+  sprintf(
+    "f <- %s",
+    kwb.utils::selectElements(
+      kwb.utils::resolve(templates, fun = fun_name, pkg = pkg_name),
+      ifelse(pkg_name == "", "pkg_fun_exported", "pkg_fun_private")
+    )
+  )
 }
 
 # single_quoted ----------------------------------------------------------------
