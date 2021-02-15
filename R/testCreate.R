@@ -63,41 +63,39 @@ create_tests_for_file <- function(
   dbg = TRUE
 )
 {
-  skip <- FALSE
-
   # One test file per source file?
   if (! file_per_function) {
 
-    filename <- sprintf("test-file-%s", basename(source_file))
+    test_file <- sprintf("%s/test-file-%s", test_dir, basename(source_file))
 
-    test_file <- file.path(test_dir, filename)
-
-    skip <- warn_if_file_exists(test_file)
+    if (isTRUE(warn_if_file_exists(test_file))) {
+      return()
+    }
   }
 
-  if (! skip) {
+  # Parse the source file, find the function definitions and generate test
+  # code for each function
+  codes <- get_test_codes_for_functions_in_file(
+    file = source_file,
+    pkg_name = pkg_name,
+    test_dir = test_dir,
+    full = full
+  )
 
-    # Parse the source file, find the function definitions and generate test
-    # code for each function
-    codes <- get_test_codes_for_functions_in_file(
-      file = source_file, pkg_name, full = full
-    )
+  # Get the text to be put as an introduction in each generated file
+  intro <- kwb.utils::resolve(
+    "intro", get_templates(), datetime = Sys.time(), user = kwb.utils::user()
+  )
 
-    # Get the text to be put as an introduction in each generated file
-    intro <- kwb.utils::resolve(
-      "intro", get_templates(), datetime = Sys.time(), user = kwb.utils::user()
-    )
+  if (file_per_function) {
 
-    if (file_per_function) {
+    # Write one file for each function in the source file
+    write_one_file_per_function(codes, test_dir, intro, dbg)
 
-      # Write one file for each function in the source file
-      write_one_file_per_function(codes, test_dir, intro, dbg)
+  } else {
 
-    } else {
-
-      # Write one file for all functions in the source file
-      write_test_file(c(intro, do.call(c, codes)), test_file, dbg)
-    }
+    # Write one file for all functions in the source file
+    write_test_file(c(intro, do.call(c, codes)), test_file, dbg)
   }
 }
 
@@ -107,7 +105,6 @@ warn_if_file_exists <- function(test_file)
   exists <- file.exists(test_file)
 
   if (exists) {
-
     message("Skipping exising file ", basename(test_file))
   }
 
@@ -158,13 +155,13 @@ get_test_codes_for_functions_in_file <- function(file, pkg_name, ...)
   # Create a test_that-call for each function
   lapply(kwb.utils::toNamedList(names(assignments)), function(fun_name) {
 
-    get_test_for_function(
-      fun_name = fun_name,
-      fun_args = assignments[[fun_name]][[3]][[2]],
-      pkg_name = pkg_name,
-      exports = exports,
-      ...
-    )
+      get_test_for_function(
+        fun_name = fun_name,
+        fun_args = assignments[[fun_name]][[3]][[2]],
+        pkg_name = pkg_name,
+        exports = exports,
+        ...
+      )
   })
 }
 
