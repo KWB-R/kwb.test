@@ -349,12 +349,6 @@ eval_text <- function(text, dbg = TRUE)
 #' @importFrom kwb.utils asColumnList resolve
 get_function_call_strings <- function(fun_name, arg_combis, pkg_name = "")
 {
-  templates <- get_templates()
-
-  templates <- kwb.utils::resolve(templates, fun = fun_name, pkg = pkg_name)
-
-  key <- ifelse(pkg_name == "", "pkg_fun_exported", "pkg_fun_private")
-
   arg_strings <- ""
 
   if (nrow(arg_combis) > 0) {
@@ -368,7 +362,14 @@ get_function_call_strings <- function(fun_name, arg_combis, pkg_name = "")
     arg_strings <- do.call(paste, paste_args)
   }
 
-  sprintf("%s(%s)", templates[[key]], arg_strings)
+  sprintf(
+    "%s(%s)",
+    kwb.utils::selectElements(
+      kwb.utils::resolve(get_templates(), fun = fun_name, pkg = pkg_name),
+      ifelse(pkg_name == "", "pkg_fun_exported", "pkg_fun_private")
+    ),
+    arg_strings
+  )
 }
 
 # get_arg_combis ---------------------------------------------------------------
