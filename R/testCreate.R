@@ -41,18 +41,17 @@ create_test_files <- function(
 
   source_files <- file.path("R", dir("R"))
 
-  if (is.null(target_dir)) {
+  target_dir <- kwb.utils::defaultIfNULL(
+    target_dir,
+    kwb.utils::createDirectory(file.path("tests", "testthat"), dbg = dbg)
+  )
 
-    target_dir <- file.path("tests", "testthat")
-    target_dir <- kwb.utils::createDirectory(target_dir, dbg = dbg)
-  }
-
-  #source_file <- source_files[1]
+  #source_file <- source_files[3]
 
   for (source_file in source_files) {
 
     create_tests_for_file(
-      source_file, target_dir, pkg_name, file_per_function, full, dbg
+      source_file, test_dir = target_dir, pkg_name, file_per_function, full, dbg
     )
   }
 }
@@ -64,41 +63,39 @@ create_tests_for_file <- function(
   dbg = TRUE
 )
 {
-  skip <- FALSE
-
   # One test file per source file?
   if (! file_per_function) {
 
-    filename <- sprintf("test-file-%s", basename(source_file))
+    test_file <- sprintf("%s/test-file-%s", test_dir, basename(source_file))
 
-    test_file <- file.path(test_dir, filename)
-
-    skip <- warn_if_file_exists(test_file)
+    if (isTRUE(warn_if_file_exists(test_file))) {
+      return()
+    }
   }
 
-  if (! skip) {
+  # Parse the source file, find the function definitions and generate test
+  # code for each function
+  codes <- get_test_codes_for_functions_in_file(
+    file = source_file,
+    pkg_name = pkg_name,
+    test_dir = test_dir,
+    full = full
+  )
 
-    # Parse the source file, find the function definitions and generate test
-    # code for each function
-    codes <- get_test_codes_for_functions_in_file(
-      file = source_file, pkg_name, full = full
-    )
+  # Get the text to be put as an introduction in each generated file
+  intro <- kwb.utils::resolve(
+    "intro", get_templates(), datetime = Sys.time(), user = kwb.utils::user()
+  )
 
-    # Get the text to be put as an introduction in each generated file
-    intro <- kwb.utils::resolve(
-      "intro", get_templates(), datetime = Sys.time(), user = kwb.utils::user()
-    )
+  if (file_per_function) {
 
-    if (file_per_function) {
+    # Write one file for each function in the source file
+    write_one_file_per_function(codes, test_dir, intro, dbg)
 
-      # Write one file for each function in the source file
-      write_one_file_per_function(codes, test_dir, intro, dbg)
+  } else {
 
-    } else {
-
-      # Write one file for all functions in the source file
-      write_test_file(c(intro, do.call(c, codes)), test_file, dbg)
-    }
+    # Write one file for all functions in the source file
+    write_test_file(c(intro, do.call(c, codes)), test_file, dbg)
   }
 }
 
@@ -108,7 +105,6 @@ warn_if_file_exists <- function(test_file)
   exists <- file.exists(test_file)
 
   if (exists) {
-
     message("Skipping exising file ", basename(test_file))
   }
 
@@ -132,20 +128,22 @@ write_one_file_per_function <- function(codes, test_dir, intro, dbg = TRUE)
 
     fun_name <- kwb.utils::getAttribute(code, "fun_name")
 
-    filename <- sprintf("test-function-%s.R", fun_name)
-
-    test_file <- file.path(test_dir, filename)
+    test_file <- path_to_testfile(test_dir, fun_name)
 
     if (! warn_if_file_exists(test_file)) {
-
       write_test_file(c(intro, code), test_file, dbg = dbg)
     }
   }
 }
 
+# path_to_testfile -------------------------------------------------------------
+path_to_testfile <- function(test_dir, fun_name)
+{
+  sprintf("%s/test-function-%s.R", test_dir, fun_name)
+}
+
 # get_test_codes_for_functions_in_file -----------------------------------------
-#' @importFrom kwb.utils toNamedList
-get_test_codes_for_functions_in_file <- function(file, pkg_name, ...)
+get_test_codes_for_functions_in_file <- function(file, pkg_name, test_dir, ...)
 {
   # Get the expressions that represent assignments of function definitions
   assignments <- get_function_assignments(file)
@@ -157,16 +155,23 @@ get_test_codes_for_functions_in_file <- function(file, pkg_name, ...)
   exports <- getNamespaceExports(pkg_name)
 
   # Create a test_that-call for each function
-  lapply(kwb.utils::toNamedList(names(assignments)), function(fun_name) {
+  kwb.utils::excludeNULL(dbg = FALSE, lapply(
+    stats::setNames(nm = names(assignments)),
+    FUN = function(fun_name) {
 
-    get_test_for_function(
-      fun_name = fun_name,
-      fun_args = assignments[[fun_name]][[3]][[2]],
-      pkg_name = pkg_name,
-      exports = exports,
-      ...
-    )
-  })
+      if (warn_if_file_exists(path_to_testfile(test_dir, fun_name))) {
+        return()
+      }
+
+      get_test_for_function(
+        fun_name = fun_name,
+        fun_args = assignments[[fun_name]][[3]][[2]],
+        pkg_name = pkg_name,
+        exports = exports,
+        ...
+      )
+    }
+  ))
 }
 
 # get_function_assignments -----------------------------------------------------
@@ -231,11 +236,23 @@ get_test_for_function_calls <- function(
 
   errors <- sapply(errors, get_error_message)
 
+  full_fun_name <- kwb.utils::resolve(
+    ifelse(exported, "pkg_fun_exported", "pkg_fun_private"),
+    templates_raw,
+    fun = fun_name,
+    pkg = pkg_name
+  )
+
+  pattern <- paste0("(^|\\s)", full_fun_name, "\\(")
+
+  use_shortcut <- function(x) gsub(pattern, "f(", x)
+
   expect_calls_fail <- sapply(seq_along(fail_indices), function(i) {
 
     kwb.utils::resolve(
-      "fun_call_error", templates_raw,
-      fun_call = call_strings[fail_indices[i]],
+      "fun_call_error",
+      templates_raw,
+      fun_call = use_shortcut(call_strings[fail_indices[i]]),
       quoted_error = gsub("\n", "\n# ", errors[i])
     )
   })
@@ -243,24 +260,44 @@ get_test_for_function_calls <- function(
   expect_calls_success <- sapply(success_indices, function(i) {
 
     kwb.utils::resolve(
-      "fun_call_alone", templates_raw, fun_call = call_strings[i]
+      "fun_call_alone",
+      templates_raw,
+      fun_call = use_shortcut(call_strings[i])
     )
   })
 
   #call_strings[fails] <- sprintf("expect_error(%s)", call_strings[fails])
   #test_that_body <- paste0("  ", call_strings, collapse = "\n")
 
-  test_that_body <- kwb.utils::collapsed(
-    c(expect_calls_success, expect_calls_fail)
+  shortcut <- get_shortcut_assignment(templates_raw, fun_name, pkg_name)
+
+  test_that_body <- paste0(
+    "  ", shortcut, "\n\n",
+    kwb.utils::collapsed(c(expect_calls_success, expect_calls_fail))
   )
 
   test_that_call <- kwb.utils::resolve(
-    "test_that_call", templates_raw, fun = fun_name, pkg = pkg_name,
-    pkg_fun = ifelse(exported, "<pkg_fun_exported>", "<pkg_fun_private>"),
+    "test_that_call",
+    templates_raw,
+    fun = fun_name,
+    #pkg = pkg_name,
+    #pkg_fun = "f", #ifelse(exported, "<pkg_fun_exported>", "<pkg_fun_private>"),
     test_that_body = paste0(test_that_body, "\n")
   )
 
   structure(test_that_call, fun_name = fun_name)
+}
+
+# get_shortcut_assignment ------------------------------------------------------
+get_shortcut_assignment <- function(templates, fun_name, pkg_name)
+{
+  sprintf(
+    "f <- %s",
+    kwb.utils::selectElements(
+      kwb.utils::resolve(templates, fun = fun_name, pkg = pkg_name),
+      ifelse(pkg_name == "", "pkg_fun_exported", "pkg_fun_private")
+    )
+  )
 }
 
 # single_quoted ----------------------------------------------------------------
@@ -304,7 +341,7 @@ get_templates <- function()
     intro_4 = "# so that real cases are tested. <hint_delete>\n#\n",
     hint_delete = "You should then delete this comment.",
     test_creator = "kwb.test::create_test_files()",
-    test_that_call = "test_that(\"<fun>() works\", {\n\n<test_that_body>})\n",
+    test_that_call = "test_that(\"<fun>() works\", {\n\n<test_that_body>})",
     fun_call = "<pkg_fun>(<args>)",
     fun_call_alone = "  <fun_call>\n",
     fun_call_error = "<i1>expect_error(\n<expect_error_args>\n<i1>)\n",
@@ -344,12 +381,6 @@ eval_text <- function(text, dbg = TRUE)
 #' @importFrom kwb.utils asColumnList resolve
 get_function_call_strings <- function(fun_name, arg_combis, pkg_name = "")
 {
-  templates <- get_templates()
-
-  templates <- kwb.utils::resolve(templates, fun = fun_name, pkg = pkg_name)
-
-  key <- ifelse(pkg_name == "", "pkg_fun_exported", "pkg_fun_private")
-
   arg_strings <- ""
 
   if (nrow(arg_combis) > 0) {
@@ -363,7 +394,14 @@ get_function_call_strings <- function(fun_name, arg_combis, pkg_name = "")
     arg_strings <- do.call(paste, paste_args)
   }
 
-  sprintf("%s(%s)", templates[[key]], arg_strings)
+  sprintf(
+    "%s(%s)",
+    kwb.utils::selectElements(
+      kwb.utils::resolve(get_templates(), fun = fun_name, pkg = pkg_name),
+      ifelse(pkg_name == "", "pkg_fun_exported", "pkg_fun_private")
+    ),
+    arg_strings
+  )
 }
 
 # get_arg_combis ---------------------------------------------------------------

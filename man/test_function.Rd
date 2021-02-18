@@ -4,8 +4,11 @@
 \alias{test_function}
 \title{Test if Function Reproduces Stored Results}
 \usage{
-test_function(functionName, testdata = loadArgs(functionName,
-  file.path(tempdir(), "test")), dbg = TRUE)
+test_function(
+  functionName,
+  testdata = loadArgs(functionName, file.path(tempdir(), "test")),
+  dbg = TRUE
+)
 }
 \arguments{
 \item{functionName}{Name of the function to test. It must be callable, i.e.
