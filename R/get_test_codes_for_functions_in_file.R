@@ -8,14 +8,12 @@ get_test_codes_for_functions_in_file <- function(file, pkg_name, test_dir, ...)
   exports <- getNamespaceExports(pkg_name)
 
   # Create a test_that-call for each function
-  kwb.utils::excludeNULL(dbg = FALSE, lapply(
-    stats::setNames(nm = names(assignments)),
+  test_calls <- lapply(
+    X = stats::setNames(nm = names(assignments)),
     FUN = function(fun_name) {
-
       if (warn_if_file_exists(path_to_testfile(test_dir, fun_name))) {
         return()
       }
-
       get_test_for_function(
         fun_name = fun_name,
         fun_args = assignments[[fun_name]][[3]][[2]],
@@ -24,7 +22,10 @@ get_test_codes_for_functions_in_file <- function(file, pkg_name, test_dir, ...)
         ...
       )
     }
-  ))
+  )
+
+  # Remove NULL elements
+  kwb.utils::excludeNULL(test_calls, dbg = FALSE)
 }
 
 # get_function_assignments -----------------------------------------------------
