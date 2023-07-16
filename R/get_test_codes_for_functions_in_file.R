@@ -4,9 +4,6 @@ get_test_codes_for_functions_in_file <- function(file, pkg_name, test_dir, ...)
   # Get the expressions that represent assignments of function definitions
   assignments <- get_function_assignments(file)
 
-  # Name the assignments according to the function names
-  names(assignments) <- sapply(assignments, function(x) as.character(x[[2]]))
-
   # Get the names of the exported functions
   exports <- getNamespaceExports(pkg_name)
 
@@ -44,7 +41,13 @@ get_function_assignments <- function(file)
     ok && length(expr) >= 3 && as.character(expr[[3]][[1]]) == "function"
   })
 
-  code[is_function_assignment]
+  assignments <- code[is_function_assignment]
+
+  # Name the assignments according to the function names
+  stats::setNames(
+    assignments,
+    sapply(assignments, function(x) as.character(x[[2]]))
+  )
 }
 
 # path_to_testfile -------------------------------------------------------------
