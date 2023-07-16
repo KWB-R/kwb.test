@@ -27,9 +27,7 @@ create_test_files <- function(
   full = FALSE, dbg = TRUE
 )
 {
-  if (FALSE) {
-    package_dir = getwd(); file_per_function = TRUE; full = FALSE; dbg = TRUE
-  }
+  #package_dir = getwd(); file_per_function = TRUE; full = FALSE; dbg = TRUE
 
   pkg_name <- basename(package_dir)
 
@@ -39,7 +37,7 @@ create_test_files <- function(
 
   usethis::use_testthat()
 
-  source_files <- file.path("R", dir("R"))
+  source_files <- dir("R", pattern = "^[^.].*\\.[rR]$", full.names = TRUE)
 
   target_dir <- kwb.utils::defaultIfNULL(
     target_dir,
