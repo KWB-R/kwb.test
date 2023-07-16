@@ -72,9 +72,9 @@ create_tests_for_file <- function(
   # One test file per source file?
   if (!file_per_function) {
 
-    test_file <- sprintf("%s/test-file-%s", test_dir, basename(script))
+    test_file <- file.path(test_dir, paste0("test-file-", basename(script)))
 
-    if (isTRUE(warn_if_file_exists(test_file))) {
+    if (warn_if_file_exists(test_file)) {
       return()
     }
   }
