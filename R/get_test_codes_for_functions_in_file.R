@@ -4,6 +4,15 @@ get_test_codes_for_functions_in_file <- function(file, pkg_name, test_dir, ...)
   # Get the expressions that represent assignments of function definitions
   assignments <- get_function_assignments(file)
 
+  # Exclude functions for which a test file already exists
+  {
+    file_exists <- sapply(names(assignments), function(fun_name) {
+      warn_if_file_exists(path_to_testfile(test_dir, fun_name))
+    })
+
+    assignments <- assignments[!file_exists]
+  }
+
   # Get the names of the exported functions
   exports <- getNamespaceExports(pkg_name)
 
@@ -11,9 +20,6 @@ get_test_codes_for_functions_in_file <- function(file, pkg_name, test_dir, ...)
   test_calls <- lapply(
     X = stats::setNames(nm = names(assignments)),
     FUN = function(fun_name) {
-      if (warn_if_file_exists(path_to_testfile(test_dir, fun_name))) {
-        return()
-      }
       get_test_for_function(
         fun_name = fun_name,
         fun_args = assignments[[fun_name]][[3]][[2]],
