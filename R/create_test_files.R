@@ -37,19 +37,23 @@ create_test_files <- function(
 
   usethis::use_testthat()
 
-  source_files <- dir("R", pattern = "^[^.].*\\.[rR]$", full.names = TRUE)
+  scripts <- dir("R", pattern = "^[^.].*\\.[rR]$", full.names = TRUE)
 
-  target_dir <- kwb.utils::defaultIfNULL(
-    target_dir,
-    kwb.utils::createDirectory(file.path("tests", "testthat"), dbg = dbg)
-  )
+  if (is.null(target_dir)) {
+    target_dir <- kwb.utils::createDirectory("tests/testthat", dbg = dbg)
+  }
 
-  #source_file <- source_files[3]
+  #script <- scripts[3]
 
-  for (source_file in source_files) {
+  for (script in scripts) {
 
     create_tests_for_file(
-      source_file, test_dir = target_dir, pkg_name, file_per_function, full, dbg
+      script,
+      test_dir = target_dir,
+      pkg_name = pkg_name,
+      file_per_function = file_per_function,
+      full = full,
+      dbg = dbg
     )
   }
 }
