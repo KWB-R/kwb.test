@@ -134,9 +134,7 @@ get_arg_combis <- function(arg_names, max_args = 2L)
 #' @importFrom kwb.utils asColumnList resolve
 get_function_call_strings <- function(fun_name, arg_combis, pkg_name = "")
 {
-  arg_strings <- ""
-
-  if (nrow(arg_combis) > 0L) {
+  arg_strings <- if (nrow(arg_combis) > 0L) {
 
     arg_combi_list <- kwb.utils::asColumnList(as.matrix(arg_combis))
 
@@ -145,14 +143,11 @@ get_function_call_strings <- function(fun_name, arg_combis, pkg_name = "")
     paste_args <- c(lapply(names(arg_combi_list), assignment), sep = ", ")
 
     arg_strings <- do.call(paste, paste_args)
+
+  } else {
+
+    ""
   }
 
-  sprintf(
-    "%s(%s)",
-    kwb.utils::selectElements(
-      kwb.utils::resolve(get_templates(), fun = fun_name, pkg = pkg_name),
-      ifelse(pkg_name == "", "pkg_fun_exported", "pkg_fun_private")
-    ),
-    arg_strings
-  )
+  sprintf("f(%s)", arg_strings)
 }
