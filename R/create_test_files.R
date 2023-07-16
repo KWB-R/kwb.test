@@ -101,18 +101,6 @@ create_tests_for_file <- function(
   }
 }
 
-# warn_if_file_exists ----------------------------------------------------------
-warn_if_file_exists <- function(test_file)
-{
-  exists <- file.exists(test_file)
-
-  if (exists) {
-    message("Skipping exising file ", basename(test_file))
-  }
-
-  exists
-}
-
 # write_test_file --------------------------------------------------------------
 #' @importFrom kwb.utils catAndRun
 write_test_file <- function(code, test_file, dbg = TRUE)
