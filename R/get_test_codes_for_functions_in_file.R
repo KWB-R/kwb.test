@@ -2,7 +2,7 @@
 get_test_codes_for_functions_in_file <- function(file, pkg_name, test_dir, ...)
 {
   # Get the expressions that represent assignments of function definitions
-  assignments <- get_function_assignments(file)
+  assignments <- kwb.code::get_function_assignments(file)
 
   # Exclude functions for which a test file already exists
   {
@@ -32,29 +32,6 @@ get_test_codes_for_functions_in_file <- function(file, pkg_name, test_dir, ...)
 
   # Remove NULL elements
   kwb.utils::excludeNULL(test_calls, dbg = FALSE)
-}
-
-# get_function_assignments -----------------------------------------------------
-get_function_assignments <- function(file)
-{
-  code <- as.list(parse(file))
-
-  #expr <- code[[2]]
-
-  is_function_assignment <- sapply(code, function(expr) {
-
-    ok <- as.character(expr[[1]]) == "<-"
-
-    ok && length(expr) >= 3 && as.character(expr[[3]][[1]]) == "function"
-  })
-
-  assignments <- code[is_function_assignment]
-
-  # Name the assignments according to the function names
-  stats::setNames(
-    assignments,
-    sapply(assignments, function(x) as.character(x[[2]]))
-  )
 }
 
 # path_to_testfile -------------------------------------------------------------

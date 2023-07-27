@@ -17,12 +17,14 @@ License: MIT + file LICENSE
 URL: https://github.com/kwb-r/kwb.test
 BugReports: https://github.com/kwb-r/kwb.test/issues
 Imports: 
+    kwb.code,
     kwb.utils,
     usethis
 Suggests: 
     compare,
     testthat
 Remotes: 
+    github::kwb-r/kwb.code
     github::kwb-r/kwb.utils
 Encoding: UTF-8
 LazyData: TRUE
