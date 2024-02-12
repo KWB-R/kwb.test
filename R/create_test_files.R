@@ -23,25 +23,30 @@
 #' @importFrom kwb.utils createDirectory
 #'
 create_test_files <- function(
-  package_dir = getwd(), target_dir = NULL, file_per_function = TRUE,
-  full = FALSE, dbg = TRUE
+  package_dir = getwd(),
+  target_dir = NULL,
+  file_per_function = TRUE,
+  full = FALSE,
+  dbg = TRUE
 )
 {
   #package_dir = getwd(); file_per_function = TRUE; full = FALSE; dbg = TRUE
 
   pkg_name <- basename(package_dir)
 
+  # Change into the package directory and change back on exit
   old_dir <- setwd(package_dir)
-
   on.exit(setwd(old_dir))
 
   usethis::use_testthat()
 
+  # Get the paths to the R scripts in the R subfolder
   scripts <- dir("R", pattern = "^[^.].*\\.[rR]$", full.names = TRUE)
 
-  if (is.null(target_dir)) {
-    target_dir <- kwb.utils::createDirectory("tests/testthat", dbg = dbg)
-  }
+  # Set the target directory to the testthat directory by default
+  target_dir <- kwb.utils::defaultIfNULL(
+    target_dir, kwb.utils::safePath(package_dir, "tests/testthat")
+  )
 
   #script <- scripts[3]
 
