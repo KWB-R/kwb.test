@@ -4,7 +4,7 @@ get_test_for_function_calls <- function(
     call_strings, fun_name, pkg_name, exported
 )
 {
-  templates_raw <- get_templates()
+  templates <- get_templates()
 
   # Remove the calls that generate the same error messages as previous calls
   fail_indices <- which_calls_fail(call_strings, dbg = FALSE)
@@ -27,7 +27,7 @@ get_test_for_function_calls <- function(
 
     kwb.utils::resolve(
       "fun_call_error",
-      templates_raw,
+      templates,
       fun_call = use_shortcut(call_strings[fail_indices[i]]),
       quoted_error = gsub("\n", "\n# ", errors[i])
     )
@@ -37,7 +37,7 @@ get_test_for_function_calls <- function(
 
     kwb.utils::resolve(
       "fun_call_alone",
-      templates_raw,
+      templates,
       fun_call = use_shortcut(call_strings[i])
     )
   })
@@ -52,7 +52,7 @@ get_test_for_function_calls <- function(
 
   test_that_call <- kwb.utils::resolve(
     "test_that_call",
-    templates_raw,
+    templates,
     fun = fun_name,
     #pkg = pkg_name,
     #pkg_fun = "f", #ifelse(exported, "<pkg_fun_exported>", "<pkg_fun_private>"),
