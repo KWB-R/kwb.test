@@ -17,12 +17,7 @@ get_test_for_function_calls <- function(
 
   errors <- sapply(errors, get_error_message)
 
-  full_fun_name <- kwb.utils::resolve(
-    ifelse(exported, "pkg_fun_exported", "pkg_fun_private"),
-    templates_raw,
-    fun = fun_name,
-    pkg = pkg_name
-  )
+  full_fun_name <- get_full_function_name(fun_name, pkg_name, exported)
 
   pattern <- paste0("(^|\\s)", full_fun_name, "\\(")
 
@@ -89,6 +84,21 @@ get_templates <- function()
     pkg_fun_private = "<pkg>:::<fun>",
     i2 = "<i1><i1>",
     i1 = "  "
+  )
+}
+
+# get_full_function_name -------------------------------------------------------
+get_full_function_name <- function(
+    fun_name,
+    pkg_name,
+    exported = fun_name %in% getNamespaceExports(pkg_name)
+)
+{
+  kwb.utils::resolve(
+    ifelse(exported, "pkg_fun_exported", "pkg_fun_private"),
+    get_templates(),
+    fun = fun_name,
+    pkg = pkg_name
   )
 }
 
