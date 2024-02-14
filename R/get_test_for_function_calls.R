@@ -45,10 +45,8 @@ get_test_for_function_calls <- function(
   #call_strings[fails] <- sprintf("expect_error(%s)", call_strings[fails])
   #test_that_body <- paste0("  ", call_strings, collapse = "\n")
 
-  shortcut <- get_shortcut_assignment(templates_raw, fun_name, pkg_name)
-
   test_that_body <- paste0(
-    "  ", shortcut, "\n\n",
+    "  f <- ", full_function_name(pkg_name, fun_name, exported), "\n\n",
     kwb.utils::collapsed(c(expect_calls_success, expect_calls_fail))
   )
 
@@ -148,14 +146,8 @@ get_error_message <- function(error)
   }
 }
 
-# get_shortcut_assignment ------------------------------------------------------
-get_shortcut_assignment <- function(templates, fun_name, pkg_name)
+# full_function_name -----------------------------------------------------------
+full_function_name <- function(pkg_name, fun_name, exported)
 {
-  sprintf(
-    "f <- %s",
-    kwb.utils::selectElements(
-      kwb.utils::resolve(templates, fun = fun_name, pkg = pkg_name),
-      ifelse(pkg_name == "", "pkg_fun_exported", "pkg_fun_private")
-    )
-  )
+  paste0(pkg_name, ifelse(exported, "::", ":::"), fun_name)
 }
