@@ -22,22 +22,21 @@ get_test_codes_for_functions_in_file <- function(
   test_calls <- lapply(
     X = stats::setNames(nm = names(assignments)),
     FUN = function(fun_name) {
-      arg_strings <- if (full) {
-        arg_combis_to_arg_strings(
-          arg_combis = get_arg_combis(
-            arg_names = get_no_default_args(
-              arguments = assignments[[fun_name]][[3L]][[2L]]
+      get_test_for_function_calls(
+        pkg_name = pkg_name,
+        fun_name = fun_name,
+        exported = fun_name %in% exports,
+        arg_strings = if (full) {
+          arg_combis_to_arg_strings(
+            arg_combis = get_arg_combis(
+              arg_names = get_no_default_args(
+                arguments = assignments[[fun_name]][[3L]][[2L]]
+              )
             )
           )
-        )
-      } else {
-        ""
-      }
-      get_test_for_function_calls(
-        call_strings = sprintf("%s(%s)", fun_name, arg_strings),
-        fun_name = fun_name,
-        pkg_name = pkg_name,
-        exported = fun_name %in% exports
+        } else {
+          ""
+        }
       )
     }
   )

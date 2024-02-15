@@ -1,10 +1,12 @@
 # get_test_for_function_calls --------------------------------------------------
 #' @importFrom kwb.utils collapsed getAttribute resolve
 get_test_for_function_calls <- function(
-    call_strings, fun_name, pkg_name, exported
+    pkg_name, fun_name, exported = FALSE, arg_strings = ""
 )
 {
   templates <- get_templates()
+
+  call_strings <- sprintf("%s(%s)", fun_name, arg_strings)
 
   # Remove the calls that generate the same error messages as previous calls
   fail_indices <- which_calls_fail(call_strings, dbg = FALSE)
