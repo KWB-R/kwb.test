@@ -16,46 +16,37 @@ get_test_for_function_calls <- function(
     fun = fun_name
   ))
 
-  call_strings <- sprintf("%s(%s)", fun_name, arg_strings)
-
-  success_indices <- setdiff(seq_along(call_strings), fail_indices)
+  success_indices <- setdiff(seq_along(arg_strings), fail_indices)
 
   fail_indices <- remove_duplicated_fails(fail_indices)
 
-  errors <- kwb.utils::getAttribute(fail_indices, "errors")
-
-  errors <- sapply(errors, get_error_message)
-
-  full_fun_name <- get_full_function_name(fun_name, pkg_name, exported)
-
-  pattern <- paste0("(^|\\s)", full_fun_name, "\\(")
-
-  use_shortcut <- function(x) gsub(pattern, "f(", x)
+  errors <- sapply(
+    X = kwb.utils::getAttribute(fail_indices, "errors"),
+    FUN = get_error_message
+  )
 
   expect_calls_fail <- sapply(seq_along(fail_indices), function(i) {
-
     kwb.utils::resolve(
       "fun_call_error",
       templates,
-      fun_call = use_shortcut(call_strings[fail_indices[i]]),
+      pkg_fun = "f",
+      args = arg_strings[fail_indices[i]],
       quoted_error = gsub("\n", "\n# ", errors[i])
     )
   })
 
   expect_calls_success <- sapply(success_indices, function(i) {
-
     kwb.utils::resolve(
       "fun_call_alone",
       templates,
-      fun_call = use_shortcut(call_strings[i])
+      pkg_fun = "f",
+      args = arg_strings[i]
     )
   })
 
-  #call_strings[fails] <- sprintf("expect_error(%s)", call_strings[fails])
-  #test_that_body <- paste0("  ", call_strings, collapse = "\n")
-
-  test_that_body <- paste0(
-    "  f <- ", full_function_name(pkg_name, fun_name, exported), "\n\n",
+  test_that_body <- sprintf(
+    "  f <- %s\n\n%s\n",
+    full_function_name(pkg_name, fun_name, exported),
     kwb.utils::collapsed(c(expect_calls_success, expect_calls_fail))
   )
 
@@ -63,9 +54,7 @@ get_test_for_function_calls <- function(
     "test_that_call",
     templates,
     fun = fun_name,
-    #pkg = pkg_name,
-    #pkg_fun = "f", #ifelse(exported, "<pkg_fun_exported>", "<pkg_fun_private>"),
-    test_that_body = paste0(test_that_body, "\n")
+    test_that_body = test_that_body
   )
 
   structure(test_that_call, fun_name = fun_name)
