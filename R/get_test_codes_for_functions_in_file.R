@@ -1,5 +1,7 @@
 # get_test_codes_for_functions_in_file -----------------------------------------
-get_test_codes_for_functions_in_file <- function(file, pkg_name, test_dir, ...)
+get_test_codes_for_functions_in_file <- function(
+    file, pkg_name, test_dir, full = FALSE
+)
 {
   # Get the expressions that represent assignments of function definitions
   assignments <- kwb.code::get_function_assignments(file)
@@ -20,12 +22,22 @@ get_test_codes_for_functions_in_file <- function(file, pkg_name, test_dir, ...)
   test_calls <- lapply(
     X = stats::setNames(nm = names(assignments)),
     FUN = function(fun_name) {
-      get_test_for_function(
+      arg_strings <- if (full) {
+        arg_combis_to_arg_strings(
+          arg_combis = get_arg_combis(
+            arg_names = get_no_default_args(
+              arguments = assignments[[fun_name]][[3L]][[2L]]
+            )
+          )
+        )
+      } else {
+        ""
+      }
+      get_test_for_function_calls(
+        call_strings = sprintf("%s(%s)", fun_name, arg_strings),
         fun_name = fun_name,
-        fun_args = assignments[[fun_name]][[3]][[2]],
         pkg_name = pkg_name,
-        exports = exports,
-        ...
+        exported = fun_name %in% exports
       )
     }
   )
@@ -38,35 +50,6 @@ get_test_codes_for_functions_in_file <- function(file, pkg_name, test_dir, ...)
 path_to_testfile <- function(test_dir, fun_name)
 {
   sprintf("%s/test-function-%s.R", test_dir, fun_name)
-}
-
-# get_test_for_function --------------------------------------------------------
-get_test_for_function <- function(
-    fun_name,
-    fun_args,
-    pkg_name,
-    exports = getNamespaceExports(pkg_name),
-    full = FALSE
-)
-{
-  #assignment <- assignments[[1]]
-
-  arg_combis <- if (full) {
-
-    get_arg_combis(arg_names = get_no_default_args(fun_args))
-
-  } else {
-
-    data.frame()
-  }
-
-  #fun_name <- as.character(assignment[[2]])
-
-  call_strings <- get_function_call_strings(fun_name, arg_combis, pkg_name)
-
-  exported <- fun_name %in% exports
-
-  get_test_for_function_calls(call_strings, fun_name, pkg_name, exported)
 }
 
 # get_no_default_args ----------------------------------------------------------
@@ -107,24 +90,16 @@ get_arg_combis <- function(arg_names, max_args = 2L)
   }
 }
 
-# get_function_call_strings ----------------------------------------------------
-#' @importFrom kwb.utils asColumnList resolve
-get_function_call_strings <- function(fun_name, arg_combis, pkg_name = "")
+# arg_combis_to_arg_strings ----------------------------------------------------
+arg_combis_to_arg_strings <- function(arg_combis)
 {
-  arg_strings <- if (nrow(arg_combis) > 0L) {
-
-    arg_combi_list <- kwb.utils::asColumnList(as.matrix(arg_combis))
-
-    assignment <- function(name) paste(name, "=", arg_combi_list[[name]])
-
-    paste_args <- c(lapply(names(arg_combi_list), assignment), sep = ", ")
-
-    arg_strings <- do.call(paste, paste_args)
-
-  } else {
-
-    ""
+  if (nrow(arg_combis) == 0L) {
+    return("")
   }
 
-  sprintf("f(%s)", arg_strings)
+  args_for_paste <- lapply(names(arg_combis), function(arg_name) {
+    paste(arg_name, "=", arg_combis[[arg_name]])
+  })
+
+  do.call(paste, c(args_for_paste, sep = ", "))
 }
