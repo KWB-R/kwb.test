@@ -48,12 +48,12 @@ create_test_files <- function(
     target_dir, kwb.utils::safePath(package_dir, "tests/testthat")
   )
 
-  #script <- scripts[3]
-
   for (script in scripts) {
 
+    #script <- scripts[1L]
+
     create_tests_for_file(
-      script,
+      script = script,
       test_dir = target_dir,
       pkg_name = pkg_name,
       file_per_function = file_per_function,

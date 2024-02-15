@@ -22,6 +22,7 @@ get_test_codes_for_functions_in_file <- function(
   test_calls <- lapply(
     X = stats::setNames(nm = names(assignments)),
     FUN = function(fun_name) {
+      #fun_name <- X[[1L]]
       get_test_for_function_calls(
         pkg_name = pkg_name,
         fun_name = fun_name,
