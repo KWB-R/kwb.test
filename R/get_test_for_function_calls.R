@@ -1,10 +1,22 @@
 # get_test_for_function_calls --------------------------------------------------
 #' @importFrom kwb.utils collapsed getAttribute resolve
 get_test_for_function_calls <- function(
-    call_strings, fun_name, pkg_name, exported
+    pkg_name, fun_name, exported = FALSE, arg_strings = ""
 )
 {
-  templates_raw <- get_templates()
+  templates <- get_templates()
+
+  # Create function call strings
+  call_strings <- unname(sapply(arg_strings, function(x) {
+    kwb.utils::resolve(
+      "fun_call",
+      templates,
+      args = x,
+      pkg_fun = "<pkg_fun_private>",
+      pkg = pkg_name,
+      fun = fun_name
+    )
+  }))
 
   # Remove the calls that generate the same error messages as previous calls
   fail_indices <- which_calls_fail(call_strings, dbg = FALSE)
@@ -13,57 +25,41 @@ get_test_for_function_calls <- function(
 
   fail_indices <- remove_duplicated_fails(fail_indices)
 
-  errors <- kwb.utils::getAttribute(fail_indices, "errors")
-
-  errors <- sapply(errors, get_error_message)
-
-  full_fun_name <- kwb.utils::resolve(
-    ifelse(exported, "pkg_fun_exported", "pkg_fun_private"),
-    templates_raw,
-    fun = fun_name,
-    pkg = pkg_name
+  errors <- sapply(
+    X = kwb.utils::getAttribute(fail_indices, "errors"),
+    FUN = get_error_message
   )
 
-  pattern <- paste0("(^|\\s)", full_fun_name, "\\(")
-
-  use_shortcut <- function(x) gsub(pattern, "f(", x)
-
   expect_calls_fail <- sapply(seq_along(fail_indices), function(i) {
-
     kwb.utils::resolve(
       "fun_call_error",
-      templates_raw,
-      fun_call = use_shortcut(call_strings[fail_indices[i]]),
+      templates,
+      pkg_fun = "f",
+      args = arg_strings[fail_indices[i]],
       quoted_error = gsub("\n", "\n# ", errors[i])
     )
   })
 
   expect_calls_success <- sapply(success_indices, function(i) {
-
     kwb.utils::resolve(
       "fun_call_alone",
-      templates_raw,
-      fun_call = use_shortcut(call_strings[i])
+      templates,
+      pkg_fun = "f",
+      args = arg_strings[i]
     )
   })
 
-  #call_strings[fails] <- sprintf("expect_error(%s)", call_strings[fails])
-  #test_that_body <- paste0("  ", call_strings, collapse = "\n")
-
-  shortcut <- get_shortcut_assignment(templates_raw, fun_name, pkg_name)
-
-  test_that_body <- paste0(
-    "  ", shortcut, "\n\n",
+  test_that_body <- sprintf(
+    "  f <- %s\n\n%s\n",
+    full_function_name(pkg_name, fun_name, exported),
     kwb.utils::collapsed(c(expect_calls_success, expect_calls_fail))
   )
 
   test_that_call <- kwb.utils::resolve(
     "test_that_call",
-    templates_raw,
+    templates,
     fun = fun_name,
-    #pkg = pkg_name,
-    #pkg_fun = "f", #ifelse(exported, "<pkg_fun_exported>", "<pkg_fun_private>"),
-    test_that_body = paste0(test_that_body, "\n")
+    test_that_body = test_that_body
   )
 
   structure(test_that_call, fun_name = fun_name)
@@ -92,11 +88,25 @@ get_templates <- function()
   )
 }
 
+# get_full_function_name -------------------------------------------------------
+get_full_function_name <- function(
+    fun_name,
+    pkg_name,
+    exported = fun_name %in% getNamespaceExports(pkg_name)
+)
+{
+  kwb.utils::resolve(
+    ifelse(exported, "pkg_fun_exported", "pkg_fun_private"),
+    get_templates(),
+    fun = fun_name,
+    pkg = pkg_name
+  )
+}
+
 # which_calls_fail -------------------------------------------------------------
 which_calls_fail <- function(call_strings, dbg = TRUE)
 {
   results <- lapply(call_strings, function(call_string) {
-
     tryCatch(eval_text(call_string, dbg), error = identity)
   })
 
@@ -110,7 +120,7 @@ which_calls_fail <- function(call_strings, dbg = TRUE)
 eval_text <- function(text, dbg = TRUE)
 {
   kwb.utils::catAndRun(paste0("Evaluating:\n ", text, "\n"), dbg = dbg, {
-    eval(parse(text = text))
+    suppressWarnings(eval(parse(text = text)))
   })
 }
 
@@ -138,14 +148,8 @@ get_error_message <- function(error)
   }
 }
 
-# get_shortcut_assignment ------------------------------------------------------
-get_shortcut_assignment <- function(templates, fun_name, pkg_name)
+# full_function_name -----------------------------------------------------------
+full_function_name <- function(pkg_name, fun_name, exported)
 {
-  sprintf(
-    "f <- %s",
-    kwb.utils::selectElements(
-      kwb.utils::resolve(templates, fun = fun_name, pkg = pkg_name),
-      ifelse(pkg_name == "", "pkg_fun_exported", "pkg_fun_private")
-    )
-  )
+  paste0(pkg_name, ifelse(exported, "::", ":::"), fun_name)
 }
