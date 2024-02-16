@@ -6,15 +6,20 @@ get_test_for_function_calls <- function(
 {
   templates <- get_templates()
 
+  # Create function call strings
+  call_strings <- unname(sapply(arg_strings, function(x) {
+    kwb.utils::resolve(
+      "fun_call",
+      templates,
+      args = x,
+      pkg_fun = "<pkg_fun_private>",
+      pkg = pkg_name,
+      fun = fun_name
+    )
+  }))
+
   # Remove the calls that generate the same error messages as previous calls
-  fail_indices <- which_calls_fail(dbg = FALSE, kwb.utils::resolve(
-    "fun_call",
-    templates,
-    args = arg_strings,
-    pkg_fun = "<pkg_fun_private>",
-    pkg = pkg_name,
-    fun = fun_name
-  ))
+  fail_indices <- which_calls_fail(call_strings, dbg = FALSE)
 
   success_indices <- setdiff(seq_along(arg_strings), fail_indices)
 
