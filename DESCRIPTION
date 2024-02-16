@@ -17,13 +17,16 @@ License: MIT + file LICENSE
 URL: https://github.com/kwb-r/kwb.test
 BugReports: https://github.com/kwb-r/kwb.test/issues
 Imports: 
+    kwb.code,
     kwb.utils,
     usethis
 Suggests: 
     compare,
-    testthat
+    testthat (>= 3.0.0)
 Remotes: 
+    github::kwb-r/kwb.code@dev,
     github::kwb-r/kwb.utils
 Encoding: UTF-8
 LazyData: TRUE
-RoxygenNote: 6.1.1
+RoxygenNote: 7.3.1
+Config/testthat/edition: 3

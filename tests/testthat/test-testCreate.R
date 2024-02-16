@@ -13,11 +13,6 @@ test_that("get_test_codes_for_functions_in_file() works", {
   expect_error(kwb.test:::get_test_codes_for_functions_in_file())
 })
 
-test_that("get_function_assignments() works", {
-
-  expect_error(kwb.test:::get_function_assignments())
-})
-
 test_that("get_test_for_function_assignment() works", {
 
   expect_error(kwb.test:::get_test_for_function_assignment())
