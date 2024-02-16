@@ -107,7 +107,6 @@ get_full_function_name <- function(
 which_calls_fail <- function(call_strings, dbg = TRUE)
 {
   results <- lapply(call_strings, function(call_string) {
-
     tryCatch(eval_text(call_string, dbg), error = identity)
   })
 
@@ -121,7 +120,7 @@ which_calls_fail <- function(call_strings, dbg = TRUE)
 eval_text <- function(text, dbg = TRUE)
 {
   kwb.utils::catAndRun(paste0("Evaluating:\n ", text, "\n"), dbg = dbg, {
-    eval(parse(text = text))
+    suppressWarnings(eval(parse(text = text)))
   })
 }
 
