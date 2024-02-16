@@ -85,7 +85,7 @@ get_arg_combis <- function(arg_names, max_args = 2L)
 
   if (n == 1L) {
 
-    matrix(string_values, ncol = 1L, dimnames = list(NULL, arg_names))
+    stats::setNames(data.frame(string_values), arg_names)
 
   } else {
 
