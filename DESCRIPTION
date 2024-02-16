@@ -24,7 +24,7 @@ Suggests:
     compare,
     testthat
 Remotes: 
-    github::kwb-r/kwb.code,
+    github::kwb-r/kwb.code@dev,
     github::kwb-r/kwb.utils
 Encoding: UTF-8
 LazyData: TRUE
