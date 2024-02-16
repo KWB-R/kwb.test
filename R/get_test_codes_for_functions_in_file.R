@@ -3,13 +3,6 @@ get_test_codes_for_functions_in_file <- function(
     file, pkg_name, test_dir, full = FALSE
 )
 {
-  if (full) {
-    stop(
-      "get_test_codes_for_functions_in_file(..., full = TRUE) is currently ",
-      "not supported!"
-    )
-  }
-
   #file = script
 
   # Get the expressions that represent assignments of function definitions
