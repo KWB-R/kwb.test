@@ -21,7 +21,7 @@ get_test_for_function_calls <- function(
   # Remove the calls that generate the same error messages as previous calls
   fail_indices <- which_calls_fail(call_strings, dbg = FALSE)
 
-  success_indices <- setdiff(seq_along(arg_strings), fail_indices)
+  success_indices <- setdiff(seq_along(call_strings), fail_indices)
 
   fail_indices <- remove_duplicated_fails(fail_indices)
 
